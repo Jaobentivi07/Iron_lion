@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ironleon – Treino e alimentação pelo seu IMC</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#E7E8EA;--card:#fff;--ink:#101113;--mut:#54585E;--pri:#101113;--onpri:#fff;--acc:#B3141F;--line:#C6C9CD;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0C0D;--card:#1B1C1F;--ink:#EDEEEF;--mut:#A7ABB1;--pri:#EDEEEF;--onpri:#0B0C0D;--line:#3A3D42;--acc:#E4394A}}
+:root[data-theme="dark"]{--bg:#0B0C0D;--card:#1B1C1F;--ink:#EDEEEF;--mut:#A7ABB1;--pri:#EDEEEF;--onpri:#0B0C0D;--line:#3A3D42;--acc:#E4394A}
+:root[data-hc]{--bg:#fff;--card:#fff;--ink:#000;--mut:#000;--pri:#000;--onpri:#fff;--line:#000;--acc:#A3001E}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 4rem);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.6 Barlow,system-ui,Arial,sans-serif}
+h1,h2,h3{font-family:"Barlow Condensed","Arial Narrow",sans-serif;line-height:1.05;margin:0 0 .6rem;font-weight:800;letter-spacing:.01em}
+h1{font-size:clamp(2.6rem,8vw,4.8rem)}h2{font-size:2.1rem}h3{font-size:1.4rem}
+p{max-width:65ch;margin:0 0 .8rem}
+a{color:var(--ink)}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.skip{position:absolute;left:-999px;top:0;background:var(--acc);color:#fff;padding:.6rem 1rem;z-index:9}
+.skip:focus{left:0}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--pri);color:var(--onpri);border-bottom:2px solid var(--acc)}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.2rem;padding:.5rem 1rem;max-width:72rem;margin:auto}
+.logo{font:800 1.7rem "Barlow Condensed",sans-serif;margin-right:auto;color:var(--onpri)}
+.logo b{color:var(--acc)}
+nav{display:flex;gap:1rem}
+nav a{color:var(--onpri);font-weight:600}
+.tools{display:flex;gap:.4rem;align-items:center}
+.tools button{font:inherit;font-weight:600;min-width:2.5rem;min-height:2.5rem;border:2px solid var(--onpri);background:transparent;color:var(--onpri);border-radius:6px;cursor:pointer}
+.tools button[aria-pressed="true"]{background:var(--onpri);color:var(--pri)}
+#userchip{display:none;align-items:center;gap:.5rem;color:var(--onpri);font-weight:600}
+#userchip button{background:transparent;border:2px solid var(--onpri);color:var(--onpri);border-radius:6px;padding:.35rem .7rem;font:inherit;font-weight:700;cursor:pointer;min-height:2.5rem}
+main{max-width:72rem;margin:auto;padding:0 1rem}
+section{padding:2.5rem 0}
+.hero{display:grid;gap:2rem;align-items:start}
+@media(min-width:860px){.hero{grid-template-columns:1.1fr .9fr}}
+.hero p.lead{font-size:1.15rem;color:var(--mut)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:8px;padding:1.2rem}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+label{display:block;font-weight:600;margin-top:.8rem}
+input,select{width:100%;font:inherit;min-height:2.8rem;padding:.4rem .7rem;border:2px solid var(--mut);border-radius:6px;background:var(--card);color:var(--ink)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:0 .8rem}
+.btn{font:700 1.1rem Barlow,sans-serif;background:var(--acc);color:#fff;border:2px solid var(--acc);padding:.7rem 1.4rem;border-radius:6px;cursor:pointer;margin-top:1.1rem;width:100%}
+.btn:hover{filter:brightness(1.1)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+.err{color:#B3261E;font-weight:600;min-height:1.5rem;margin:.6rem 0 0}
+:root[data-theme="dark"] .err{color:#FF9B93}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .err{color:#FF9B93}}
+.ok{color:#2E7D32;font-weight:600;min-height:1.5rem;margin:.6rem 0 0}
+:root[data-theme="dark"] .ok{color:#7BD389}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ok{color:#7BD389}}
+.imcbar{display:flex;height:.9rem;border-radius:9px;overflow:hidden;position:relative;margin:.8rem 0 .3rem}
+.imcbar i{flex:1}
+.imcbar i:nth-child(1){background:#8B98A8}.imcbar i:nth-child(2){background:#2E7D32}.imcbar i:nth-child(3){background:#C79A00}.imcbar i:nth-child(4){background:var(--acc)}
+.mark{position:absolute;top:-4px;width:6px;height:calc(100% + 8px);background:var(--ink);border-radius:3px;transition:left .5s}
+.days{display:flex;flex-wrap:wrap;gap:.5rem;margin:.8rem 0}
+.days button{font:600 1rem Barlow,sans-serif;padding:.5rem .9rem;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:6px;cursor:pointer;min-height:2.6rem}
+.days button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+ul.ex{list-style:none;padding:0;margin:0}
+ul.ex li{display:flex;justify-content:space-between;gap:1rem;padding:.6rem 0;border-bottom:1px solid var(--line)}
+.macros{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:.6rem;margin:.6rem 0 1rem}
+.macros div{border:2px solid var(--line);border-radius:8px;padding:.6rem;text-align:center}
+.macros b{display:block;font:800 1.7rem "Barlow Condensed",sans-serif}
+.note{border-left:5px solid var(--acc);padding:.5rem .9rem;background:var(--card);margin:1rem 0}
+#plano[hidden],#auth[hidden],#logged[hidden]{display:none}
+.wf{border:2px dashed var(--mut);border-radius:8px;padding:.8rem;background:var(--card)}
+.wf i{display:block;background:var(--line);height:.7rem;border-radius:3px;margin:.45rem 0}
+.wf .box{background:var(--line);border-radius:4px;padding:.4rem;font-size:.85rem;color:var(--ink);margin:.4rem 0;text-align:center}
+.wf .two{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.sw{display:flex;flex-wrap:wrap;gap:.6rem;margin:.6rem 0}
+.sw span{padding:.6rem .8rem;border-radius:6px;font-weight:600;font-size:.9rem;border:2px solid var(--line)}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--line);padding:.5rem;text-align:left;vertical-align:top}
+.doc h2{margin-top:.5rem}
+footer{padding:2rem 1rem;text-align:center;color:var(--mut)}
+.tabs{display:flex;gap:.5rem;margin-bottom:1rem}
+.tabs button{flex:1;font:700 1rem Barlow,sans-serif;padding:.6rem;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:6px;cursor:pointer;min-height:2.8rem}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.hint{color:var(--mut);font-size:.9rem;margin-top:.3rem}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header>
+ <div class="bar">
+
+
+ <img src=https://images.totalpass.com/public/1280x720/czM6Ly90cC1pbWFnZS1hZG1pbi1wcm9kL2d5bXMvZWF1bTU3M3F4eHBnemJ6c3lzNWJpOWwxanVmeTRhM3hzN2VkNDgzeWFwdnhodDVoZzJibjlxc3J4eXNm>
+<h1><strong>Iron leon</strong></h1>
+  <nav aria-label="Principal"><a href="#programa">Meu plano</a><a href="#ux">Documentação UX</a></nav>
+  <div id="userchip"><span id="ola"></span><button id="sair" type="button">Sair</button></div>
+  <div class="tools" role="group" aria-label="Acessibilidade">
+   <button id="fm" aria-label="Diminuir letra">A−</button>
+   <button id="fp" aria-label="Aumentar letra">A+</button>
+   <button id="hc" aria-pressed="false" aria-label="Alto contraste">◐</button>
+  </div>
+ </div>
+</header>
+<main id="conteudo">
+
+<section id="hero" aria-labelledby="t1">
+ <h1 id="t1">Treino e alimentação para o seu corpo Sem enrolação</h1>
+ <p class="lead">Crie sua conta, informe peso e altura e receba seu IMC, uma semana de treino e um cardápio com calorias e macros. Referência de modelo: rede de academias de acesso rápido, como a Smart Fit.</p>
+</section>
+
+<section id="programa" aria-labelledby="t1b">
+ <h2 id="t1b">Área do aluno</h2>
+
+ <div id="auth" class="card" style="max-width:28rem">
+  <div class="tabs" role="tablist" aria-label="Entrar ou cadastrar">
+   <button type="button" id="tabLogin" role="tab" aria-selected="true">Entrar</button>
+   <button type="button" id="tabCad" role="tab" aria-selected="false">Cadastrar</button>
+  </div>
+
+  <form id="fLogin" novalidate>
+   <label for="lEmail">E-mail</label>
+   <input id="lEmail" type="email" autocomplete="email" required>
+   <label for="lSenha">Senha</label>
+   <input id="lSenha" type="password" autocomplete="current-password" required>
+   <p id="lErro" class="err" role="alert"></p>
+   <button class="btn" type="submit">Entrar</button>
+ </form>
+
+  <form id="fCad" novalidate hidden>
+   <label for="cNome">Nome</label>
+   <input id="cNome" type="text" autocomplete="name" required>
+   <label for="cEmail">E-mail</label>
+   <input id="cEmail" type="email" autocomplete="email" required>
+   <label for="cSenha">Senha (mín. 6 caracteres)</label>
+   <input id="cSenha" type="password" autocomplete="new-password" minlength="6" required>
+   <p id="cErro" class="err" role="alert"></p>
+   <p id="cOk" class="ok" role="status"></p>
+   <button class="btn" type="submit">Criar conta</button>
+   <p class="hint">Os dados ficam salvos só neste navegador (armazenamento local), simulando um cadastro real para fins didáticos.</p>
+ </form>
+ </div>
+
+ <div id="logged" hidden>
+  <div class="hero">
+   <div>
+    <p><b id="saud"></b> Preencha seus dados para gerar o plano de hoje.</p>
+   </div>
+   <form id="f" class="card" novalidate aria-describedby="erro">
+    <h2>Seus dados</h2>
+    <div class="row">
+     <div><label for="sexo">Sexo</label><select id="sexo"><option value="m">Masculino</option><option value="f">Feminino</option></select></div>
+     <div><label for="idade">Idade (anos)</label><input id="idade" type="number" inputmode="numeric" min="14" max="90" value="25" required></div>
+     <div><label for="peso">Peso (kg)</label><input id="peso" type="number" inputmode="decimal" step="0.1" min="30" max="300" placeholder="Ex.: 72" required></div>
+     <div><label for="alt">Altura (cm)</label><input id="alt" type="number" inputmode="numeric" min="120" max="230" placeholder="Ex.: 170" required></div>
+    </div>
+    <label for="obj">Objetivo</label>
+    <select id="obj"><option value="auto">Recomendado pelo meu IMC</option><option value="emagrecer">Emagrecer</option><option value="manter">Manter o peso</option><option value="ganhar">Ganhar massa</option></select>
+    <label for="dias">Dias de treino por semana</label>
+    <select id="dias"><option value="3">3 dias</option><option value="4">4 dias</option><option value="5">5 dias</option></select>
+    <p id="erro" class="err" role="alert"></p>
+    <button class="btn" type="submit">Gerar meu plano</button>
+   </form>
+  </div>
+ </div>
+</section>
+
+<section id="plano" hidden aria-labelledby="t2" tabindex="-1">
+ <h2 id="t2">Seu plano</h2>
+ <div class="grid">
+  <div class="card" aria-live="polite">
+   <h3>Seu IMC</h3>
+   <p><b id="imc" style="font-size:2rem"></b> <span id="cls"></span></p>
+   <div class="imcbar" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="mark" id="mk"></span></div>
+   <small>Abaixo do peso · Normal · Sobrepeso · Obesidade</small>
+   <p id="obs" style="margin-top:.8rem"></p>
+  </div>
+  <div class="card">
+   <h3>Meta diária</h3>
+   <div class="macros">
+    <div><b id="kc"></b>kcal</div><div><b id="pt"></b>proteína (g)</div><div><b id="cb"></b>carboidrato (g)</div><div><b id="gd"></b>gordura (g)</div>
+   </div>
+   <p id="metaTxt"></p>
+  </div>
+ </div>
+ <div class="grid" style="margin-top:1rem">
+  <div class="card"><h3>Treino da semana</h3><div class="days" id="dias-btn" role="group" aria-label="Escolha o dia de treino"></div><div id="treino" aria-live="polite"></div></div>
+  <div class="card"><h3>Alimentação do dia</h3><ul class="ex" id="dieta"></ul></div>
+ </div>
+</section>
+
+<section id="ux" class="doc" aria-labelledby="t3">
+ <h1 id="t3" style="font-size:3rem">Documentação UX</h1>
+
+ <div class="card" style="margin-bottom:1rem">
+  <h2>Questionário: pensando no usuário</h2>
+  <table>
+   <tr><th scope="col">Pergunta</th><th scope="col">Resposta do grupo</th></tr>
+   <tr><td>Quem vai usar?</td><td>Adultos de 18 a 45 anos, iniciantes em academia, que treinam em rede de baixo custo.</td></tr>
+   <tr><td>Qual problema ele tem?</td><td>Não sabe qual treino montar nem o que comer para o seu peso e altura.</td></tr>
+   <tr><td>O que ele quer fazer no site?</td><td>Criar uma conta, informar dados, entender o IMC e receber treino e cardápio prontos.</td></tr>
+   <tr><td>Em que aparelho acessa?</td><td>Principalmente no celular, muitas vezes na própria academia.</td></tr>
+   <tr><td>Que dificuldades pode ter?</td><td>Pouco tempo, letra pequena, baixa visão, medo de errar o exercício, medo de perder o cadastro.</td></tr>
+   <tr><td>Que informação é essencial?</td><td>Login simples, IMC explicado, dias de treino, séries, repetições, calorias e refeições.</td></tr>
+   <tr><td>Como sabe que deu certo?</td><td>Entra na conta e chega ao plano em menos de 1 minuto.</td></tr>
+   <tr><td>O que a referência faz bem?</td><td>Smart Fit: preço claro, poucos passos, linguagem direta, foco no celular.</td></tr>
+  </table>
+ </div>
+
+ <div class="grid">
+  <div class="card">
+   <h2>Persona</h2>
+   <h3>Camila Ribeiro, 29 anos</h3>
+   <p>Analista administrativa, 1,62 m e 74 kg (IMC 28, sobrepeso). Trabalha o dia todo sentada e treina 3 vezes por semana, depois do expediente.</p>
+   <p><b>Objetivos:</b> emagrecer com saúde, criar rotina, comer melhor sem dieta radical.</p>
+   <p><b>Frustrações:</b> treinos genéricos, aparelhos que não conhece, cadastros longos e planos difíceis de ler no celular.</p>
+   <p><b>Comportamento:</b> usa o celular para tudo, compara academias por preço, desiste se o cadastro é confuso.</p>
+   <p><b>Necessidade de UX:</b> cadastro curto, resultado imediato, texto grande e contraste alto.</p>
+  </div>
+  <div class="card">
+   <h2>Protótipo</h2>
+   <p>O próprio site acima é o protótipo funcional e navegável. Fluxo principal testado:</p>
+   <ol>
+    <li>Entrar na página inicial e ler a proposta.</li>
+    <li>Criar conta ou entrar com e-mail e senha.</li>
+    <li>Preencher sexo, idade, peso, altura, objetivo e dias.</li>
+    <li>Tocar em "Gerar meu plano".</li>
+    <li>Ver IMC, meta diária, treino por dia e cardápio.</li>
+   </ol>
+   <p>Para Figma: importe as telas do wireframe abaixo e ligue os passos 1 a 5 com "On click".</p>
+  </div>
+ </div>
+
+ <div class="card" style="margin:1rem 0">
+  <h2> Wireframes (baixa fidelidade)</h2>
+  <div class="grid">
+   <div class="wf" role="img" aria-label="Wireframe da tela de login: abas Entrar e Cadastrar, campos de e-mail e senha">
+    <div class="two"><div class="box">Logo</div><div class="box">Menu · A− A+ ◐</div></div>
+    <div class="box">Entrar · Cadastrar</div>
+    <div><i style="width:90%"></i><i style="width:75%"></i></div>
+    <div class="box"><b>Entrar</b></div>
+    <small>Tela 1: login / cadastro</small>
+   </div>
+   <div class="wf" role="img" aria-label="Wireframe do formulário de dados: sexo, idade, peso, altura, objetivo e dias">
+    <div class="two"><div class="box">Sexo · Idade</div><div class="box">Peso · Altura</div></div>
+    <div class="box">Objetivo</div><div class="box">Dias por semana</div>
+    <div class="box"><b>Gerar meu plano</b></div>
+    <small>Tela 2: dados do aluno</small>
+   </div>
+   <div class="wf" role="img" aria-label="Wireframe da tela de resultado: IMC, metas, treino por dia e alimentação">
+    <div class="two"><div class="box">IMC + barra</div><div class="box">kcal · macros</div></div>
+    <div class="box">Dia A · Dia B · Dia C</div>
+    <div class="two"><div><i></i><i></i><i></i><i></i></div><div><i></i><i></i><i></i><i></i></div></div>
+    <small>Tela 3: resultado</small>
+   </div>
+  </div>
+ </div>
+
+ <div class="grid">
+  <div class="card">
+   <h2>UI: guia visual</h2>
+   <p>O wireframe virou interface em preto e cinza, remetendo a ferro e academia, com vermelho de intensidade só nos botões de ação. Títulos em Barlow Condensed e texto em Barlow.</p>
+   <div class="sw"><span style="background:#101113;color:#fff">Preto #101113</span><span style="background:#54585E;color:#fff">Cinza #54585E</span><span style="background:#C6C9CD;color:#000">Cinza claro #C6C9CD</span><span style="background:#E7E8EA;color:#000">Fundo #E7E8EA</span><span style="background:#B3141F;color:#fff">Vermelho #B3141F</span></div>
+   <p>Botões grandes (mín. 44 px), cantos suaves, uma ação principal por tela e modo escuro automático.</p>
+  </div>
+  <div class="card">
+   <h2> Acessibilidade aplicada</h2>
+   <ul>
+    <li>Botões A− e A+ para o tamanho da letra.</li>
+    <li>Botão de alto contraste (◐).</li>
+    <li>Link "Pular para o conteúdo" e foco visível.</li>
+    <li>Todos os campos com rótulo e erros lidos em voz alta (aria-live).</li>
+    <li>Navegação por teclado e área de toque grande.</li>
+    <li>Idioma pt-BR, HTML semântico e respeito a "reduzir movimento".</li>
+    <li>Resultado do IMC também em texto, não só em cor.</li>
+   </ul>
+  </div>
+ </div>
+ <div class="card note">
+  <h2> Desenvolvimento e login</h2>
+  <p>Front-end em HTML5, CSS3 e JavaScript. O cadastro/login funciona como um "back-end" simulado em JavaScript, guardando usuário, e-mail e senha (com um hash simples) no armazenamento local do navegador, e liberando o formulário de treino só depois de autenticado.</p>
+  <p>Para um back-end real de produção, o mesmo formulário pode enviar os dados por fetch() para uma API (por exemplo, Node.js + Express + banco de dados com senhas criptografadas em bcrypt), sem mudar a interface.</p>
+ </div>
+</section>
+</main>
+<footer>Ironleon · Projeto acadêmico de UX · Consulte um profissional antes de iniciar treino ou dieta.</footer>
+ <img src="https://media.tenor.com/q-89tPb6bwAAAAAM/never-gonna-give-you-up.gif" jsaction="" class="sFlh5c FyHeAf uT7N3d" style="max-width: 50px; width: 50px; height: 50px; margin: 0px;" alt="Hd Rick Rickroll Hd GIF - Hd Rick Rickroll Hd Never Gonna Give You Up -  Discover &amp; Share GIFs" jsname="kn3ccd">
+
+<script>
+const $=id=>document.getElementById(id);
+
+/* ---------- "back-end" simulado em JS (localStorage) ---------- */
+const DB_KEY="ironleon_users",SESSION_KEY="ironleon_session";
+function hash(str){let h=0;for(let i=0;i<str.length;i++){h=(h*31+str.charCodeAt(i))>>>0}return h.toString(36)}
+function getUsers(){try{return JSON.parse(localStorage.getItem(DB_KEY))||[]}catch(e){return[]}}
+function saveUsers(u){try{localStorage.setItem(DB_KEY,JSON.stringify(u))}catch(e){}}
+function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY))}catch(e){return null}}
+function setSession(u){try{localStorage.setItem(SESSION_KEY,JSON.stringify(u))}catch(e){}}
+function clearSession(){try{localStorage.removeItem(SESSION_KEY)}catch(e){}}
+
+function cadastrar(nome,email,senha){
+ const users=getUsers();
+ if(users.some(u=>u.email===email.toLowerCase()))return{ok:false,msg:"Já existe uma conta com este e-mail."};
+ users.push({nome,email:email.toLowerCase(),senha:hash(senha)});
+ saveUsers(users);
+ return{ok:true};
+}
+function entrar(email,senha){
+ const users=getUsers();
+ const u=users.find(u=>u.email===email.toLowerCase());
+ if(!u||u.senha!==hash(senha))return{ok:false,msg:"E-mail ou senha incorretos."};
+ return{ok:true,user:{nome:u.nome,email:u.email}};
+}
+
+function mostrarLogado(u){
+ $("auth").hidden=true;$("logged").hidden=false;
+ $("userchip").style.display="flex";
+ $("ola").textContent="Olá, "+u.nome.split(" ")[0];
+ $("saud").textContent="Bem-vindo(a), "+u.nome.split(" ")[0]+"!";
+}
+function mostrarDeslogado(){
+ $("auth").hidden=false;$("logged").hidden=true;$("plano").hidden=true;
+ $("userchip").style.display="none";
+}
+(function initAuth(){
+ const s=getSession();
+ if(s)mostrarLogado(s);else mostrarDeslogado();
+})();
+
+$("tabLogin").onclick=()=>{$("tabLogin").setAttribute("aria-selected","true");$("tabCad").setAttribute("aria-selected","false");$("fLogin").hidden=false;$("fCad").hidden=true};
+$("tabCad").onclick=()=>{$("tabCad").setAttribute("aria-selected","true");$("tabLogin").setAttribute("aria-selected","false");$("fCad").hidden=false;$("fLogin").hidden=true};
+
+$("fCad").addEventListener("submit",function(e){
+ e.preventDefault();
+ const nome=$("cNome").value.trim(),email=$("cEmail").value.trim(),senha=$("cSenha").value;
+ $("cErro").textContent="";$("cOk").textContent="";
+ if(nome.length<2){$("cErro").textContent="Informe seu nome completo.";return}
+ if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){$("cErro").textContent="Informe um e-mail válido.";return}
+ if(senha.length<6){$("cErro").textContent="A senha precisa ter ao menos 6 caracteres.";return}
+ const r=cadastrar(nome,email,senha);
+ if(!r.ok){$("cErro").textContent=r.msg;return}
+ $("cOk").textContent="Conta criada! Você já pode entrar.";
+ $("fCad").reset();
+ setTimeout(()=>{$("tabLogin").click();$("lEmail").value=email;$("lEmail").focus()},600);
+});
+
+$("fLogin").addEventListener("submit",function(e){
+ e.preventDefault();
+ const email=$("lEmail").value.trim(),senha=$("lSenha").value;
+ $("lErro").textContent="";
+ const r=entrar(email,senha);
+ if(!r.ok){$("lErro").textContent=r.msg;return}
+ setSession(r.user);
+ mostrarLogado(r.user);
+});
+
+$("sair").addEventListener("click",function(){
+ clearSession();
+ $("plano").hidden=true;
+ mostrarDeslogado();
+ $("tabLogin").click();
+});
+
+/* ---------- gerador de treino e dieta ---------- */
+const E={
+ FA:["Agachamento livre","Supino reto","Remada baixa","Desenvolvimento com halteres","Prancha (30 s)"],
+ FB:["Leg press","Puxada frontal","Supino inclinado","Stiff","Abdominal"],
+ FC:["Afundo","Remada curvada","Flexão de braço","Elevação lateral","Rosca direta + tríceps"],
+ UP:["Supino reto","Remada baixa","Desenvolvimento","Puxada frontal","Rosca direta + tríceps"],
+ LO:["Agachamento","Leg press","Stiff","Cadeira extensora","Panturrilha em pé"],
+ PU:["Supino reto","Desenvolvimento","Supino inclinado","Elevação lateral","Tríceps na corda"],
+ PL:["Puxada frontal","Remada curvada","Remada baixa","Face pull","Rosca direta"]};
+const S={
+ 3:[["Dia A · Corpo inteiro","FA"],["Dia B · Corpo inteiro","FB"],["Dia C · Corpo inteiro","FC"]],
+ 4:[["Dia A · Superior","UP"],["Dia B · Inferior","LO"],["Dia C · Superior","PU"],["Dia D · Inferior","LO"]],
+ 5:[["Dia A · Empurrar","PU"],["Dia B · Puxar","PL"],["Dia C · Pernas","LO"],["Dia D · Superior","UP"],["Dia E · Corpo inteiro","FA"]]};
+const G={emagrecer:["3×15","45 s de descanso","Ao final, 20 min de cardio leve (esteira ou bike)."],
+ manter:["3×12","60 s de descanso","Ao final, 10 a 15 min de cardio."],
+ ganhar:["4×8–10","90 s de descanso","Aqueça 5 min; cardio é opcional. Foque em aumentar a carga aos poucos."]};
+const M={
+ emagrecer:[["Café da manhã","2 ovos mexidos, 1 fatia de pão integral e 1 fruta"],["Lanche","Iogurte natural com aveia"],["Almoço","Metade do prato de salada e legumes, 1 filé de frango ou peixe, 3 colheres de arroz integral e feijão"],["Lanche da tarde","1 fruta e um punhado de castanhas"],["Jantar","Omelete com legumes e batata-doce cozida"]],
+ manter:[["Café da manhã","Pão integral com queijo branco, 1 ovo e 1 fruta"],["Lanche","Iogurte com granola"],["Almoço","Arroz, feijão, carne magra ou frango, salada e legumes"],["Lanche da tarde","Sanduíche natural de frango e suco de fruta sem açúcar"],["Jantar","Macarrão integral com carne moída e salada"]],
+ ganhar:[["Café da manhã","3 ovos, 2 fatias de pão, 1 banana e leite"],["Lanche","Vitamina de leite, banana e aveia com pasta de amendoim"],["Almoço","Arroz, feijão, 150 g de carne ou frango, legumes e 1 fio de azeite"],["Pré-treino","Pão com queijo e 1 fruta"],["Jantar","Batata ou macarrão, 150 g de peixe ou frango e salada"]]};
+
+function calc(e){
+ e.preventDefault();
+ const sx=$("sexo").value,id=+$("idade").value,p=+$("peso").value,a=+$("alt").value,d=$("dias").value;
+ let er="";
+ if(!p||p<30||p>300)er="Informe um peso entre 30 e 300 kg.";
+ else if(!a||a<120||a>230)er="Informe uma altura entre 120 e 230 cm.";
+ else if(!id||id<14||id>90)er="Informe uma idade entre 14 e 90 anos.";
+ $("erro").textContent=er;
+ if(er){$(!p||p<30||p>300?"peso":!a||a<120||a>230?"alt":"idade").focus();return}
+ const imc=p/((a/100)**2),v=imc.toFixed(1).replace(".",",");
+ const cls=imc<18.5?"Abaixo do peso":imc<25?"Peso normal":imc<30?"Sobrepeso":"Obesidade";
+ let obj=$("obj").value;
+ if(obj==="auto")obj=imc<18.5?"ganhar":imc<25?"manter":"emagrecer";
+ const tmb=10*p+6.25*a-5*id+(sx==="m"?5:-161);
+ const fat=d==="3"?1.375:d==="4"?1.55:1.6;
+ const kc=Math.round((tmb*fat+(obj==="emagrecer"?-400:obj==="ganhar"?300:0))/10)*10;
+ const pt=Math.round(p*(obj==="manter"?1.6:1.8)),gd=Math.round(p*0.9),cb=Math.max(0,Math.round((kc-pt*4-gd*9)/4));
+ $("imc").textContent=v;$("cls").textContent="· "+cls;
+ $("mk").style.left=Math.min(97,Math.max(0,(imc-15)/25*100))+"%";
+ $("obs").textContent=imc<18.5?"Foque em comer o suficiente e treinar força. Se possível, faça uma avaliação nutricional."
+  :imc<25?"Você está na faixa saudável. O foco é constância e boa alimentação."
+  :imc<30?"Um déficit leve de calorias com treino de força e caminhadas ajuda a chegar à faixa normal."
+  :"Prefira exercícios de baixo impacto no início (caminhada, bike) e procure avaliação médica antes de intensificar.";
+ $("kc").textContent=kc;$("pt").textContent=pt;$("cb").textContent=cb;$("gd").textContent=gd;
+ $("metaTxt").textContent="Objetivo: "+{emagrecer:"emagrecer",manter:"manter o peso",ganhar:"ganhar massa"}[obj]+". Beba pelo menos 2 litros de água por dia.";
+ $("dieta").innerHTML=M[obj].map(m=>`<li><b>${m[0]}</b><span style="text-align:right;max-width:70%">${m[1]}</span></li>`).join("");
+ const box=$("dias-btn");box.innerHTML="";
+ const show=i=>{
+  [...box.children].forEach((b,j)=>b.setAttribute("aria-pressed",j===i));
+  const [t,k]=S[d][i],g=G[obj];
+  $("treino").innerHTML=`<p><b>${t}</b></p><ul class="ex">${E[k].map(x=>`<li><span>${x}</span><b>${g[0]}</b></li>`).join("")}</ul><p style="margin-top:.6rem">${g[1]}. ${g[2]}</p>`;
+ };
+ S[d].forEach((s,i)=>{const b=document.createElement("button");b.type="button";b.textContent=s[0].split(" · ")[0];b.setAttribute("aria-pressed","false");b.onclick=()=>show(i);box.appendChild(b)});
+ show(0);
+ const pl=$("plano");pl.hidden=false;pl.scrollIntoView({behavior:"smooth"});pl.focus({preventScroll:true});
+}
+$("f").addEventListener("submit",calc);
+
+let fs=100;
+const setFs=n=>{fs=Math.min(150,Math.max(85,n));document.documentElement.style.fontSize=fs+"%"};
+$("fp").onclick=()=>setFs(fs+10);$("fm").onclick=()=>setFs(fs-10);
+$("hc").onclick=function(){const on=document.documentElement.toggleAttribute("data-hc");this.setAttribute("aria-pressed",on)};
+</script>
+</body>
+</html>
